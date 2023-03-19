@@ -1,14 +1,17 @@
-import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import Menu from "./components/Menu";
 import Board from "./components/Board";
 
 const App = () => {
   return (
     <>
-      <div className="flex flex-col justify-center items-center gap-5 mt-10">
-        <h1 className=" font-bold text-4xl text-slate-800">DaMath</h1>
-        <Board rows={8} cols={8} />
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Menu />} />
+          <Route path="/play" element={<Board rows={8} cols={8} />} />
+        </Routes>
+      </BrowserRouter>
     </>
   );
 };
