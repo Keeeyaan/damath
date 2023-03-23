@@ -5,7 +5,7 @@ const Square = ({ isBlack, children, onClick }) => {
     <div
       className={`${
         isBlack ? "bg-[#b58863]" : " bg-[#f0d9b5]"
-      } relative w-full h-0 pb-[100%]`}
+      } relative w-[70px] h-[70px]`}
       onClick={onClick}
     >
       {children}
