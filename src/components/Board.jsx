@@ -6,6 +6,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import Square from "./Square";
 import Piece from "./Piece";
+import CaptureModal from "./UI/CaptureModal";
 
 const Board = ({ rows, cols }) => {
   const [pieces, setPieces] = useState(
@@ -20,6 +21,7 @@ const Board = ({ rows, cols }) => {
   //This will set who's player gonna be first
   const [currentPlayerIsBlack, setCurrentPlayerIsBlack] = useState(false);
   const [hasCaptured, setHasCaptured] = useState(false);
+  const [capturedModalToggle, setCapturedModalToggle] = useState(false);
 
   const initialPieces = () => {
     const value = [3, 6, 9, 12, 8, 11, 4, 1, 5, 2, 7, 10];
@@ -170,6 +172,7 @@ const Board = ({ rows, cols }) => {
 
       const rowDiff = Math.abs(row - selectedPiece.row);
       const colDiff = Math.abs(col - selectedPiece.col);
+
       if (rowDiff === 2 && colDiff === 2) {
         const { row: midRow, col: midCol } = getCapturedPiece(
           selectedPiece.row,
@@ -177,6 +180,7 @@ const Board = ({ rows, cols }) => {
           row,
           col
         );
+        setCapturedModalToggle(true);
         newPieces[midRow][midCol] = null;
       }
       setPieces(newPieces);
@@ -273,33 +277,38 @@ const Board = ({ rows, cols }) => {
 
   return (
     <>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mx-auto">
-        <div className="mb-6 flex gap-2 items-center">
-          <Link to="/">
-            <button className="bg-slate-600 hover:bg-slate-700 text-white font-bold border py-2 px-2 rounded transition ease-in-out">
-              <ArrowBackIcon />
+      {capturedModalToggle && (
+        <CaptureModal setCapturedModalToggle={setCapturedModalToggle} />
+      )}
+      <div className="grid place-items-center h-screen">
+        <div className="">
+          <div className="mb-6 flex gap-2 items-center">
+            <Link to="/">
+              <button className="bg-slate-600 hover:bg-slate-700 text-white font-bold border py-2 px-2 rounded transition ease-in-out">
+                <ArrowBackIcon />
+              </button>
+            </Link>
+            <button className=" bg-lime-600 hover:bg-lime-700 text-white font-bold border py-2 px-2 rounded transition ease-in-out ">
+              <RestartAlt onClick={() => window.location.reload(false)} />
             </button>
-          </Link>
-          <button className=" bg-lime-600 hover:bg-lime-700 text-white font-bold border py-2 px-2 rounded transition ease-in-out ">
-            <RestartAlt onClick={() => window.location.reload(false)} />
-          </button>
-        </div>
-        <div
-          className="grid gap-[1px] w-full max-w-[500px] h-full max-h-[500px]"
-          style={{
-            gridTemplateRows: `repeat(${rows}, 1fr)`,
-            gridTemplateColumns: `repeat(${cols}, 1fr)`,
-          }}
-        >
-          {renderSquares()}
-        </div>
-
-        {gameOver && (
-          <div className="text-center mt-4">
-            <h2>Game Over!</h2>
-            <h3>{winner} player wins!</h3>
           </div>
-        )}
+          <div
+            className="grid gap-[1px] w-full max-w-[500px] h-full max-h-[500px]"
+            style={{
+              gridTemplateRows: `repeat(${rows}, 1fr)`,
+              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+            }}
+          >
+            {renderSquares()}
+          </div>
+
+          {gameOver && (
+            <div className="text-center mt-4">
+              <h2>Game Over!</h2>
+              <h3>{winner} player wins!</h3>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );
