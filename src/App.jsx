@@ -1,8 +1,9 @@
+import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from "react";
+
 import Menu from "./components/Menu";
 import Board from "./components/Board";
-import Modal from "./components/Modal";
+import HowToModal from "./components/UI/HowToModal";
 
 const App = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,11 +15,11 @@ const App = () => {
   return (
     <>
       <BrowserRouter>
+        <HowToModal isOpen={isOpen} toggleModal={toggleModal} />
         <Routes>
           <Route path="/" element={<Menu toggleModal={toggleModal} />} />
           <Route path="/play" element={<Board rows={8} cols={8} />} />
         </Routes>
-        <Modal isOpen={isOpen} toggleModal={toggleModal} />
       </BrowserRouter>
     </>
   );
