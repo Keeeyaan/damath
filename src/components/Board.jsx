@@ -22,13 +22,24 @@ const Board = ({ rows, cols }) => {
   const [hasCaptured, setHasCaptured] = useState(false);
 
   const initialPieces = () => {
+    const value = [3, 6, 9, 12, 8, 11, 4, 1, 5, 2, 7, 10];
+    let valueCounterBlack = 0;
+    let valueCounterWhite = 11;
     const newPieces = pieces.map((row, rowIndex) =>
       row.map((col, colIndex) => {
         if ((rowIndex + colIndex) % 2 === 0) {
           if (rowIndex < 3) {
-            return { isBlack: true, isQueen: false };
+            return {
+              isBlack: true,
+              isQueen: false,
+              value: value[valueCounterBlack++],
+            };
           } else if (rowIndex > 4) {
-            return { isBlack: false, isQueen: false };
+            return {
+              isBlack: false,
+              isQueen: false,
+              value: value[valueCounterWhite--],
+            };
           }
         }
       })
@@ -70,7 +81,7 @@ const Board = ({ rows, cols }) => {
         destCol
       );
       const capturedPiece = pieces[midRow][midCol];
-      console.log(capturedPiece);
+
       return capturedPiece && capturedPiece.isBlack !== srcPiece.isBlack;
     }
 
