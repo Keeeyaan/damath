@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
+import RestartAlt from "@mui/icons-material/RestartAlt";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import Square from "./Square";
 import Piece from "./Piece";
@@ -259,6 +263,16 @@ const Board = ({ rows, cols }) => {
   return (
     <>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mx-auto">
+        <div className="mb-6 flex gap-2 items-center">
+          <Link to="/">
+            <button className="bg-slate-600 hover:bg-slate-700 text-white font-bold border py-2 px-2 rounded transition ease-in-out">
+              <ArrowBackIcon />
+            </button>
+          </Link>
+          <button className=" bg-lime-600 hover:bg-lime-700 text-white font-bold border py-2 px-2 rounded transition ease-in-out ">
+            <RestartAlt onClick={() => window.location.reload(false)} />
+          </button>
+        </div>
         <div
           className="grid gap-[1px] w-full max-w-[500px] h-full max-h-[500px]"
           style={{
