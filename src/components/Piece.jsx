@@ -5,11 +5,9 @@ const Piece = ({ isBlack, value }) => {
     <div
       className={`${
         isBlack ? " bg-red-500" : "bg-blue-500"
-      } rounded-full absolute w-4/5 h-4/5 inset-[10%] cursor-pointer`}
+      } rounded-full absolute w-4/5 h-4/5 inset-[10%] cursor-pointer flex items-center justify-center`}
     >
-      <span className="text-center text-white flex justify-center items-center">
-        {value}
-      </span>
+      <span className=" text-white font-bold text-2xl">{value}</span>
     </div>
   );
 };
