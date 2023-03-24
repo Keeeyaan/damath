@@ -22,6 +22,7 @@ const Board = ({ rows, cols }) => {
   const [currentPlayerIsBlack, setCurrentPlayerIsBlack] = useState(false);
   const [hasCaptured, setHasCaptured] = useState(false);
   const [capturedModalToggle, setCapturedModalToggle] = useState(false);
+  const [captureValue, setCaptureValue] = useState(null);
 
   const initialPieces = () => {
     const value = [3, 6, 9, 12, 8, 11, 4, 1, 5, 2, 7, 10];
@@ -146,11 +147,10 @@ const Board = ({ rows, cols }) => {
   const handleClick = (row, col, operator) => {
     if (gameOver) return;
 
-    console.log(operator);
-
     const clickedPiece = pieces[row][col];
 
     if (clickedPiece && clickedPiece.isBlack === currentPlayerIsBlack) {
+      console.log(operator);
       console.log(clickedPiece);
       console.log(row, col);
       setSelectedPiece({ row, col });
@@ -159,6 +159,7 @@ const Board = ({ rows, cols }) => {
       isValidMove(selectedPiece.row, selectedPiece.col, row, col)
     ) {
       const srcPiece = pieces[selectedPiece.row][selectedPiece.col];
+
       if (srcPiece.isBlack !== currentPlayerIsBlack) return;
 
       //Create a shallow copy of the pieces to ensure immutability
@@ -181,8 +182,15 @@ const Board = ({ rows, cols }) => {
           col
         );
         setCapturedModalToggle(true);
+        setCaptureValue({
+          captured: newPieces[midRow][midCol].value,
+          capturer: srcPiece.value,
+          operator: operator,
+        });
+
         newPieces[midRow][midCol] = null;
       }
+
       setPieces(newPieces);
       setSelectedPiece(null);
 
@@ -271,6 +279,11 @@ const Board = ({ rows, cols }) => {
     return squares;
   };
 
+  const timerCompleteHandler = () => {
+    setCaptureValue({});
+    setCapturedModalToggle(false);
+  };
+
   useEffect(() => {
     initialPieces();
   }, []);
@@ -278,7 +291,11 @@ const Board = ({ rows, cols }) => {
   return (
     <>
       {capturedModalToggle && (
-        <CaptureModal setCapturedModalToggle={setCapturedModalToggle} />
+        <CaptureModal
+          setCapturedModalToggle={setCapturedModalToggle}
+          onComplete={timerCompleteHandler}
+          captureValue={captureValue}
+        />
       )}
       <div className="grid place-items-center h-screen">
         <div className="">
