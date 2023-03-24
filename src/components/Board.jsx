@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import RestartAlt from "@mui/icons-material/RestartAlt";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-
 import Square from "./Square";
 import Piece from "./Piece";
 import CaptureModal from "./UI/CaptureModal";
@@ -290,42 +287,31 @@ const Board = ({ rows, cols }) => {
 
   return (
     <>
-      {capturedModalToggle && (
-        <CaptureModal
-          setCapturedModalToggle={setCapturedModalToggle}
-          onComplete={timerCompleteHandler}
-          captureValue={captureValue}
-        />
-      )}
-      <div className="grid place-items-center h-screen">
-        <div className="">
-          <div className="mb-6 flex gap-2 items-center">
-            <Link to="/">
-              <button className="bg-slate-600 hover:bg-slate-700 text-white font-bold border py-2 px-2 rounded transition ease-in-out">
-                <ArrowBackIcon />
-              </button>
-            </Link>
-            <button className=" bg-lime-600 hover:bg-lime-700 text-white font-bold border py-2 px-2 rounded transition ease-in-out ">
-              <RestartAlt onClick={() => window.location.reload(false)} />
-            </button>
-          </div>
-          <div
-            className="grid gap-[1px] w-full max-w-[500px] h-full max-h-[500px]"
-            style={{
-              gridTemplateRows: `repeat(${rows}, 1fr)`,
-              gridTemplateColumns: `repeat(${cols}, 1fr)`,
-            }}
-          >
-            {renderSquares()}
-          </div>
+      <div>
+        {capturedModalToggle && (
+          <CaptureModal
+            setCapturedModalToggle={setCapturedModalToggle}
+            onComplete={timerCompleteHandler}
+            captureValue={captureValue}
+          />
+        )}
 
-          {gameOver && (
-            <div className="text-center mt-4">
-              <h2>Game Over!</h2>
-              <h3>{winner} player wins!</h3>
-            </div>
-          )}
+        <div
+          className="grid gap-[1px] w-full max-w-[500px] h-full max-h-[500px]"
+          style={{
+            gridTemplateRows: `repeat(${rows}, 1fr)`,
+            gridTemplateColumns: `repeat(${cols}, 1fr)`,
+          }}
+        >
+          {renderSquares()}
         </div>
+
+        {gameOver && (
+          <div className="text-center mt-4">
+            <h2>Game Over!</h2>
+            <h3>{winner} player wins!</h3>
+          </div>
+        )}
       </div>
     </>
   );
