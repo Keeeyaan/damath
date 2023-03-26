@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 
 import Square from "./Square";
 import Piece from "./Piece";
 import CaptureModal from "./UI/CaptureModal";
 
-const Board = ({ rows, cols }) => {
+const Board = ({
+  rows,
+  cols,
+  onAddPlayerRedScore,
+  onAddPlayerBlueScore,
+  minusRedCountdown,
+  minusBlueCountdown,
+}) => {
   const [pieces, setPieces] = useState(
     Array(rows)
       .fill(null)
@@ -281,6 +287,34 @@ const Board = ({ rows, cols }) => {
     setCapturedModalToggle(false);
   };
 
+  const answerSubmitHandler = (answer) => {
+    const playerAnswer = parseInt(answer.current.value);
+    const correctAnswer =
+      captureValue.operator === "x"
+        ? parseInt(captureValue.capturer) * parseInt(captureValue.captured)
+        : captureValue.operator === "÷"
+        ? parseInt(captureValue.capturer) / parseInt(captureValue.captured)
+        : captureValue.operator === "-"
+        ? parseInt(captureValue.capturer) - parseInt(captureValue.captured)
+        : captureValue.operator === "+"
+        ? parseInt(captureValue.capturer) + parseInt(captureValue.captured)
+        : "";
+
+    console.log(playerAnswer, correctAnswer);
+    if (currentPlayerIsBlack && playerAnswer === correctAnswer) {
+      onAddPlayerBlueScore();
+    } else if (!currentPlayerIsBlack && playerAnswer === correctAnswer) {
+      onAddPlayerRedScore();
+    } else if (currentPlayerIsBlack && playerAnswer !== correctAnswer) {
+      minusBlueCountdown();
+    } else if (!currentPlayerIsBlack && playerAnswer !== correctAnswer) {
+      minusRedCountdown();
+    }
+
+    setCaptureValue({});
+    setCapturedModalToggle(false);
+  };
+
   useEffect(() => {
     initialPieces();
   }, []);
@@ -290,7 +324,7 @@ const Board = ({ rows, cols }) => {
       <div>
         {capturedModalToggle && (
           <CaptureModal
-            setCapturedModalToggle={setCapturedModalToggle}
+            onSubmit={answerSubmitHandler}
             onComplete={timerCompleteHandler}
             captureValue={captureValue}
           />

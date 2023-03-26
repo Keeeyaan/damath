@@ -1,7 +1,15 @@
+import React, { useRef } from "react";
+
 import Modal from "./Modal";
 import Countdown from "react-countdown";
 
-const CaptureModal = ({ setCapturedModalToggle, onComplete, captureValue }) => {
+const CaptureModal = ({ onSubmit, onComplete, captureValue }) => {
+  const answerRef = useRef();
+
+  const submitHandler = () => {
+    onSubmit(answerRef);
+  };
+
   return (
     <Modal>
       <div className="mb-4 p-5 bg-white rounded">
@@ -14,16 +22,18 @@ const CaptureModal = ({ setCapturedModalToggle, onComplete, captureValue }) => {
             {`${captureValue.capturer} ${captureValue.operator} ${captureValue.captured}`}
           </label>
           <input
+            ref={answerRef}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="useranswer"
             type="text"
             placeholder="Input answer"
+            autoComplete="off"
           />
         </div>
         <div className=" flex justify-center">
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition ease-in-out mt-5 text-center"
-            onClick={() => setCapturedModalToggle(false)}
+            onClick={submitHandler}
           >
             Submit
           </button>
