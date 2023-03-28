@@ -50,14 +50,14 @@ const Game = () => {
             minusBlueCountdown={minusBlueCountdown}
           />
         </div>
-        <ScoreBoard
+        {/* <ScoreBoard
           redTimeLeft={redTimeLeft}
           blueTimeLeft={blueTimeLeft}
           setRedTimeLeft={setRedTimeLeft}
           setBlueTimeLeft={setBlueTimeLeft}
           playerBlueScore={playerBlueScore}
           playerRedScore={playerRedScore}
-        />
+        /> */}
       </div>
     </div>
   );

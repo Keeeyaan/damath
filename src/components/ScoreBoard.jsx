@@ -14,11 +14,11 @@ const ScoreBoard = ({
     <div className="h-[450px] w-[500px] bg-[#e6bb99] shadow-md rounded p-6 ">
       <div className="flex justify-around">
         <div>
-          <Timer
+          {/* <Timer
             timeLeft={blueTimeLeft}
             setTimeLeft={setBlueTimeLeft}
             runOnStart
-          />
+          /> */}
           <div className="bg-[#f0d9b5] p-4 rounded text-center">
             <h1 className=" font-bold text-blue-500 mb-2 text-xl ">
               Player Blue
@@ -29,11 +29,11 @@ const ScoreBoard = ({
           </div>
         </div>
         <div>
-          <Timer
+          {/* <Timer
             timeLeft={redTimeLeft}
             setTimeLeft={setRedTimeLeft}
             runOnStart
-          />
+          /> */}
           <div className="bg-[#f0d9b5] p-4 rounded text-center">
             <h1 className=" font-bold text-red-500 mb-2 text-xl ">
               Player Red
