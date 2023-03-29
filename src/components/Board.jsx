@@ -391,6 +391,41 @@ const Board = ({
     }
 
     console.log(playerAnswer, correctAnswer);
+
+    if (
+      !currentPlayerIsBlue &&
+      playerAnswer === correctAnswer &&
+      hasCapturedProgress
+    ) {
+      onAddPlayerRedScore();
+      setCaptureValue({});
+      returnsetCapturedModalToggle(false);
+    } else if (
+      currentPlayerIsBlue &&
+      playerAnswer === correctAnswer &&
+      hasCapturedProgress
+    ) {
+      onAddPlayerBlueScore();
+      setCaptureValue({});
+      return setCapturedModalToggle(false);
+    } else if (
+      !currentPlayerIsBlue &&
+      playerAnswer !== correctAnswer &&
+      hasCapturedProgress
+    ) {
+      minusRedCountdown();
+      setCaptureValue({});
+      return setCapturedModalToggle(false);
+    } else if (
+      currentPlayerIsBlue &&
+      playerAnswer !== correctAnswer &&
+      hasCapturedProgress
+    ) {
+      minusBlueCountdown();
+      setCaptureValue({});
+      return setCapturedModalToggle(false);
+    }
+
     if (!currentPlayerIsBlue && playerAnswer === correctAnswer) {
       onAddPlayerBlueScore();
     } else if (currentPlayerIsBlue && playerAnswer === correctAnswer) {
@@ -412,6 +447,7 @@ const Board = ({
   useEffect(() => {
     //Switch turn if no available piece to capture after capturing a piece
     if (!hasAnyValidCapture() && hasCapturedProgress) {
+      console.log("run");
       setHasCapturedProgress(false);
       setCurrentPlayerIsBlue(!currentPlayerIsBlue);
     }
@@ -452,6 +488,7 @@ const Board = ({
       <div>
         {capturedModalToggle && (
           <CaptureModal
+            capturedProgress={hasCapturedProgress}
             currentPlayer={currentPlayerIsBlue}
             onSubmit={answerSubmitHandler}
             onComplete={timerCompleteHandler}

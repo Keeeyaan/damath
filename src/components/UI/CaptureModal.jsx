@@ -8,8 +8,9 @@ const CaptureModal = ({
   onComplete,
   captureValue,
   currentPlayer,
+  capturedProgress,
 }) => {
-  const [timeLeft, setTimeLeft] = useState(5);
+  const [timeLeft, setTimeLeft] = useState(15);
   const answerRef = useRef();
 
   const submitHandler = () => {
@@ -19,15 +20,26 @@ const CaptureModal = ({
   return (
     <Modal>
       <div className="mb-4 p-5 bg-white rounded">
-        {!currentPlayer ? (
+        {currentPlayer && capturedProgress ? (
+          <h1 className="font-medium text-blue-400 text-center text-2xl mb-2">
+            Player Blue
+          </h1>
+        ) : !currentPlayer && capturedProgress ? (
+          <h1 className="font-medium text-red-400 text-center text-2xl mb-2">
+            Player Red
+          </h1>
+        ) : currentPlayer ? (
+          <h1 className="font-medium text-red-400 text-center text-2xl mb-2">
+            Player Red
+          </h1>
+        ) : !currentPlayer ? (
           <h1 className="font-medium text-blue-400 text-center text-2xl mb-2">
             Player Blue
           </h1>
         ) : (
-          <h1 className="font-medium text-red-400 text-center text-2xl mb-2">
-            Player Red
-          </h1>
+          ""
         )}
+
         <hr />
         <Timer
           className="my-4 font-semibold text-gray-600 text-center text-3xl"
