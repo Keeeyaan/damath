@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const Timer = ({ timeLeft, setTimeLeft, runOnStart }) => {
+const Timer = ({className, timeLeft, setTimeLeft, runOnStart, onComplete }) => {
   const [isRunning, setIsRunning] = useState(runOnStart);
 
   // const restartTimer = () => {
@@ -22,12 +22,13 @@ const Timer = ({ timeLeft, setTimeLeft, runOnStart }) => {
       return () => clearTimeout(timer);
     } else if (timeLeft === 0) {
       setIsRunning(false);
+      onComplete();
     }
   }, [timeLeft, isRunning]);
 
   return (
     <div className="">
-      <h2 className="font-semibold text-center text-3xl mb-2">
+      <h2 className={...className}>
         {formatTime(timeLeft)}
       </h2>
       {/* {!isRunning && <button onClick={restartTimer}>Restart Timer</button>} */}
