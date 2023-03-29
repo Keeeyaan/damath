@@ -399,7 +399,7 @@ const Board = ({
     ) {
       onAddPlayerRedScore();
       setCaptureValue({});
-      returnsetCapturedModalToggle(false);
+      return setCapturedModalToggle(false);
     } else if (
       currentPlayerIsBlue &&
       playerAnswer === correctAnswer &&
