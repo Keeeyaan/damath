@@ -387,7 +387,7 @@ const Board = ({
 
     //If has decimal places fixed it to 1
     if (correctAnswer - Math.floor(correctAnswer) !== 0) {
-      correctAnswer = parseFloat(correctAnswer.toFixed(1));
+      correctAnswer = parseFloat(correctAnswer.toFixed(2));
     }
 
     console.log(playerAnswer, correctAnswer);
