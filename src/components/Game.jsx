@@ -12,6 +12,7 @@ const Game = () => {
   const [playerRedScore, setPlayerRedScore] = useState(0);
   const [redTimeLeft, setRedTimeLeft] = useState(600);
   const [blueTimeLeft, setBlueTimeLeft] = useState(600);
+  const [currentTurn, setCurrentTurn] = useState(true);
 
   const minusRedCountdown = () => {
     setRedTimeLeft((prevTimeLeft) => Math.max(prevTimeLeft - 30, 0));
@@ -48,16 +49,20 @@ const Game = () => {
             onAddPlayerBlueScore={addPlayerBlueScoreHandler}
             minusRedCountdown={minusRedCountdown}
             minusBlueCountdown={minusBlueCountdown}
+            playerBlueScore={playerBlueScore}
+            playerRedScore={playerRedScore}
+            setCurrentTurn={setCurrentTurn}
           />
         </div>
-        {/* <ScoreBoard
+        <ScoreBoard
+          currentTurn={currentTurn}
           redTimeLeft={redTimeLeft}
           blueTimeLeft={blueTimeLeft}
           setRedTimeLeft={setRedTimeLeft}
           setBlueTimeLeft={setBlueTimeLeft}
           playerBlueScore={playerBlueScore}
           playerRedScore={playerRedScore}
-        /> */}
+        />
       </div>
     </div>
   );
