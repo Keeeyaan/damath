@@ -11,6 +11,7 @@ const Board = ({
   onAddPlayerBlueScore,
   minusRedCountdown,
   minusBlueCountdown,
+  setCurrentTurn,
 }) => {
   //This will create two dimensional array based on rows and cols
   const [pieces, setPieces] = useState(
@@ -21,16 +22,16 @@ const Board = ({
 
   //Board Logic
   const [selectedPiece, setSelectedPiece] = useState(null);
-  /*This will set who's player gonna be first*/
+  /*This will set what color gonna be first*/
   const [currentPlayerIsBlue, setCurrentPlayerIsBlue] = useState(true);
   const [hasCapturedProgress, setHasCapturedProgress] = useState(false);
-
+  const [queenCaptured, setQueenCaptured] = useState(null);
   // const [gameOver, setGameOver] = useState(false);
   // const [winner, setWinner] = useState(null);
 
   //Game Logic
-  // const [capturedModalToggle, setCapturedModalToggle] = useState(false);
-  // const [captureValue, setCaptureValue] = useState(null);
+  const [capturedModalToggle, setCapturedModalToggle] = useState(false);
+  const [captureValue, setCaptureValue] = useState(null);
 
   const getCapturedPiece = (srcRow, srcCol, destRow, destCol) => {
     const midRow = (srcRow + destRow) / 2;
@@ -55,6 +56,8 @@ const Board = ({
     //   let capturedPieceCount = 0;
     //   let lastCapturedPieceIsBlue = null;
 
+    //   if (rowDiff !== colDiff) return false;
+
     //   // Check if there are any pieces on the diagonal path and if they can be captured
     //   for (let i = 1; i < steps; i++) {
     //     const row = srcRow + ((destRow - srcRow) / steps) * i;
@@ -66,6 +69,8 @@ const Board = ({
     //         return false; // Cannot move over or capture own piece
     //       } else {
     //         capturedPieceCount++;
+    //         setQueenCaptured({ row, col });
+
     //         if (
     //           lastCapturedPieceIsBlue !== null &&
     //           lastCapturedPieceIsBlue === piece.isBlue
@@ -80,10 +85,31 @@ const Board = ({
     //   return capturedPieceCount <= 1; // The queen can capture a maximum of one piece in a single move
     // }
 
+    //Temporary Queen Piece Move Can move backward
+    if (srcPiece.isQueen) {
+      if (rowDiff === 1 && colDiff === 1) {
+        return true;
+      }
+
+      if (rowDiff === 2 && colDiff === 2) {
+        const { row: midRow, col: midCol } = getCapturedPiece(
+          srcRow,
+          srcCol,
+          destRow,
+          destCol
+        );
+        const capturedPiece = pieces[midRow][midCol];
+        return capturedPiece && capturedPiece.isBlue !== srcPiece.isBlue;
+      }
+
+      return false;
+    }
+
     if (
       //This will allow piece to only move forward
       rowDiff === 1 &&
       colDiff === 1 &&
+      !srcPiece.isQueen &&
       ((srcPiece.isBlue && destRow < srcRow) ||
         (!srcPiece.isBlue && destRow > srcRow))
     ) {
@@ -91,7 +117,7 @@ const Board = ({
     }
 
     //This will allow piece to capture opponent piece
-    if (rowDiff === 2 && colDiff === 2) {
+    if (rowDiff === 2 && colDiff === 2 && !srcPiece.isQueen) {
       const { row: midRow, col: midCol } = getCapturedPiece(
         srcRow,
         srcCol,
@@ -141,6 +167,7 @@ const Board = ({
   //   return true;
   // };
 
+  //Check piece 2 diagonal away if there is any valid capture
   const hasValidCapture = (row, col) => {
     for (let newRow = row - 2; newRow <= row + 4; newRow += 4) {
       for (let newCol = col - 2; newCol <= col + 4; newCol += 4) {
@@ -218,12 +245,13 @@ const Board = ({
           row,
           col
         );
-        // setCaptureValue({
-        //   captured: newPieces[midRow][midCol].value,
-        //   capturer: srcPiece.value,
-        //   operator: operator,
-        // });
-        // setCapturedModalToggle(true);
+
+        setCaptureValue({
+          captured: newPieces[midRow][midCol].value,
+          capturer: srcPiece.value,
+          operator: operator,
+        });
+        setCapturedModalToggle(true);
 
         newPieces[row][col] = pieces[selectedPiece.row][selectedPiece.col];
         newPieces[selectedPiece.row][selectedPiece.col] = null;
@@ -243,6 +271,7 @@ const Board = ({
 
       //Update the board state with the new piece positions
       newPieces[row][col] = pieces[selectedPiece.row][selectedPiece.col];
+
       newPieces[selectedPiece.row][selectedPiece.col] = null;
 
       //Promote piece to queen if it reaches the end of opposite side
@@ -260,6 +289,7 @@ const Board = ({
 
     return setSelectedPiece(null);
   };
+
   const renderSquares = () => {
     const squares = [];
     const operators = [
@@ -331,44 +361,53 @@ const Board = ({
     return squares;
   };
 
-  // const timerCompleteHandler = () => {
-  //   setCaptureValue({});
-  //   setCapturedModalToggle(false);
-  // };
+  const timerCompleteHandler = () => {
+    if (currentPlayerIsBlue) {
+      minusRedCountdown();
+    } else {
+      minusBlueCountdown();
+    }
 
-  // const answerSubmitHandler = (answer) => {
-  //   const playerAnswer = parseFloat(answer.current.value);
-  //   const correctAnswer =
-  //     captureValue.operator === "x"
-  //       ? parseInt(captureValue.capturer) * parseInt(captureValue.captured)
-  //       : captureValue.operator === "÷"
-  //       ? parseInt(captureValue.capturer) / parseInt(captureValue.captured)
-  //       : captureValue.operator === "-"
-  //       ? parseInt(captureValue.capturer) - parseInt(captureValue.captured)
-  //       : captureValue.operator === "+"
-  //       ? parseInt(captureValue.capturer) + parseInt(captureValue.captured)
-  //       : "";
+    setCaptureValue({});
+    setCapturedModalToggle(false);
+  };
 
-  //   console.log(playerAnswer, correctAnswer);
-  //   if (currentPlayerIsBlue && playerAnswer === correctAnswer) {
-  //     onAddPlayerBlueScore();
-  //   } else if (
-  //     currentPlayerIsBlue === false &&
-  //     playerAnswer === correctAnswer
-  //   ) {
-  //     onAddPlayerRedScore();
-  //   } else if (currentPlayerIsBlue && playerAnswer !== correctAnswer) {
-  //     minusBlueCountdown();
-  //   } else if (
-  //     currentPlayerIsBlue === false &&
-  //     playerAnswer !== correctAnswer
-  //   ) {
-  //     minusRedCountdown();
-  //   }
+  const answerSubmitHandler = (answer) => {
+    const playerAnswer = parseFloat(answer.current.value);
+    let correctAnswer =
+      captureValue.operator === "x"
+        ? parseInt(captureValue.capturer) * parseInt(captureValue.captured)
+        : captureValue.operator === "÷"
+        ? parseInt(captureValue.capturer) / parseInt(captureValue.captured)
+        : captureValue.operator === "-"
+        ? parseInt(captureValue.capturer) - parseInt(captureValue.captured)
+        : captureValue.operator === "+"
+        ? parseInt(captureValue.capturer) + parseInt(captureValue.captured)
+        : "";
 
-  //   setCaptureValue({});
-  //   setCapturedModalToggle(false);
-  // };
+    //If has decimal places fixed it to 1
+    if (correctAnswer - Math.floor(correctAnswer) !== 0) {
+      correctAnswer = parseFloat(correctAnswer.toFixed(1));
+    }
+
+    console.log(playerAnswer, correctAnswer);
+    if (!currentPlayerIsBlue && playerAnswer === correctAnswer) {
+      onAddPlayerBlueScore();
+    } else if (currentPlayerIsBlue && playerAnswer === correctAnswer) {
+      onAddPlayerRedScore();
+    } else if (!currentPlayerIsBlue && playerAnswer !== correctAnswer) {
+      minusBlueCountdown();
+    } else if (currentPlayerIsBlue && playerAnswer !== correctAnswer) {
+      minusRedCountdown();
+    }
+
+    setCaptureValue({});
+    setCapturedModalToggle(false);
+  };
+
+  useEffect(() => {
+    setCurrentTurn(currentPlayerIsBlue);
+  }, [currentPlayerIsBlue]);
 
   useEffect(() => {
     //Switch turn if no available piece to capture after capturing a piece
@@ -395,7 +434,7 @@ const Board = ({
             } else if (rowIndex > 4) {
               return {
                 isBlue: true,
-                isQueen: true,
+                isQueen: false,
                 value: value[valueCounterBlue--],
               };
             }
@@ -411,13 +450,14 @@ const Board = ({
   return (
     <>
       <div>
-        {/* {capturedModalToggle && (
+        {capturedModalToggle && (
           <CaptureModal
+            currentPlayer={currentPlayerIsBlue}
             onSubmit={answerSubmitHandler}
             onComplete={timerCompleteHandler}
             captureValue={captureValue}
           />
-        )} */}
+        )}
 
         <div
           className="grid gap-[1px] w-full max-w-[500px] h-full max-h-[500px]"
