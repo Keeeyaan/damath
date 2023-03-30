@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 import RestartAlt from "@mui/icons-material/RestartAlt";
@@ -13,6 +13,8 @@ const Game = () => {
   const [redTimeLeft, setRedTimeLeft] = useState(600);
   const [blueTimeLeft, setBlueTimeLeft] = useState(600);
   const [currentTurn, setCurrentTurn] = useState(true);
+  const [winnerIsBlue, setWinnerIsBlue] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
 
   const minusRedCountdown = () => {
     setRedTimeLeft((prevTimeLeft) => Math.max(prevTimeLeft - 30, 0));
@@ -26,6 +28,19 @@ const Game = () => {
   };
   const addPlayerRedScoreHandler = () => {
     setPlayerRedScore(playerRedScore + 1);
+  };
+
+  {
+    /* MIGHT CONSIDER THE DRAW FEATURE */
+  }
+  const playerTimerCompleteHandler = () => {
+    if (playerBlueScore > playerRedScore) {
+      setGameOver(true);
+      setWinnerIsBlue(true);
+    } else {
+      setGameOver(true);
+      setWinnerIsBlue(false);
+    }
   };
 
   return (
@@ -52,6 +67,10 @@ const Game = () => {
             playerBlueScore={playerBlueScore}
             playerRedScore={playerRedScore}
             setCurrentTurn={setCurrentTurn}
+            winnerIsBlue={winnerIsBlue}
+            setWinnerIsBlue={setWinnerIsBlue}
+            gameOver={gameOver}
+            setGameOver={setGameOver}
           />
         </div>
         <ScoreBoard
@@ -62,6 +81,7 @@ const Game = () => {
           setBlueTimeLeft={setBlueTimeLeft}
           playerBlueScore={playerBlueScore}
           playerRedScore={playerRedScore}
+          onTimerComplete={playerTimerCompleteHandler}
         />
       </div>
     </div>
