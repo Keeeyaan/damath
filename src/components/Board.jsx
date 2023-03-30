@@ -352,6 +352,11 @@ const Board = ({
                 isBlue={piece.isBlue}
                 value={piece.value}
                 isQueen={piece.isQueen}
+                isSelected={
+                  selectedPiece &&
+                  selectedPiece.row === row &&
+                  selectedPiece.col === col
+                }
               />
             )}
           </Square>
@@ -449,6 +454,7 @@ const Board = ({
     if (!hasAnyValidCapture() && hasCapturedProgress) {
       console.log("run");
       setHasCapturedProgress(false);
+      setSelectedPiece(null);
       setCurrentPlayerIsBlue(!currentPlayerIsBlue);
     }
   }, [pieces]);
