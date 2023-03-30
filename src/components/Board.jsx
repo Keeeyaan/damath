@@ -3,15 +3,22 @@ import React, { useState, useEffect } from "react";
 import Square from "./Square";
 import Piece from "./Piece";
 import CaptureModal from "./UI/CaptureModal";
+import GameOverModal from "./UI/GameOverModal";
 
 const Board = ({
   rows,
   cols,
   onAddPlayerRedScore,
   onAddPlayerBlueScore,
+  playerRedScore,
+  playerBlueScore,
   minusRedCountdown,
   minusBlueCountdown,
   setCurrentTurn,
+  winnerIsBlue,
+  setWinnerIsBlue,
+  gameOver,
+  setGameOver,
 }) => {
   //This will create two dimensional array based on rows and cols
   const [pieces, setPieces] = useState(
@@ -26,8 +33,6 @@ const Board = ({
   const [currentPlayerIsBlue, setCurrentPlayerIsBlue] = useState(true);
   const [hasCapturedProgress, setHasCapturedProgress] = useState(false);
   const [queenCaptured, setQueenCaptured] = useState(null);
-  // const [gameOver, setGameOver] = useState(false);
-  // const [winner, setWinner] = useState(null);
 
   //Game Logic
   const [capturedModalToggle, setCapturedModalToggle] = useState(false);
@@ -38,6 +43,38 @@ const Board = ({
     const midCol = (srcCol + destCol) / 2;
 
     return { row: midRow, col: midCol };
+  };
+
+  const getQueenCapturePiece = (srcRow, srcCol, destRow, destCol) => {
+    let queenCaptured = {};
+    let capturedPieceCount = 0;
+    let lastCapturedPieceIsBlue = null;
+
+    // Check if there are any pieces on the diagonal path and if they can be captured
+    for (let i = 1; i < steps; i++) {
+      const row = srcRow + ((destRow - srcRow) / steps) * i;
+      const col = srcCol + ((destCol - srcCol) / steps) * i;
+      const piece = pieces[row][col];
+
+      if (piece) {
+        if (piece.isBlue === srcPiece.isBlue) {
+          return false; // Cannot move over or capture own piece
+        } else {
+          capturedPieceCount++;
+          queenCaptured = { row, col };
+
+          if (
+            lastCapturedPieceIsBlue !== null &&
+            lastCapturedPieceIsBlue === piece.isBlue
+          ) {
+            return false; // Cannot capture two pieces of the same color in a row
+          }
+          lastCapturedPieceIsBlue = piece.isBlue;
+        }
+      }
+    }
+
+    return capturedPieceCount;
   };
 
   const isValidMove = (srcRow, srcCol, destRow, destCol) => {
@@ -131,41 +168,58 @@ const Board = ({
     return false;
   };
 
-  // const checkGameOver = (currentPlayerIsBlue) => {
-  //   let opponentPieces = 0;
-  //   let opponentHasValidMoves = false;
+  const checkGameOver = () => {
+    const bluePieces = [];
+    const redPieces = [];
 
-  //   for (let row = 0; row < rows; row++) {
-  //     for (let col = 0; col < cols; col++) {
-  //       const piece = pieces[row][col];
-  //       if (piece && piece.isBlue !== currentPlayerIsBlue) {
-  //         opponentPieces++;
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const piece = pieces[row][col];
+        if (piece) {
+          if (piece.isBlue) {
+            bluePieces.push({ row, col });
+          } else {
+            redPieces.push({ row, col });
+          }
+        }
+      }
+    }
 
-  //         for (let newRow = row - 2; newRow <= row + 2; newRow++) {
-  //           for (let newCol = col - 2; newCol <= col + 2; newCol++) {
-  //             if (
-  //               newRow >= 0 &&
-  //               newRow < rows &&
-  //               newCol >= 0 &&
-  //               newCol < cols &&
-  //               isValidMove(row, col, newRow, newCol, true)
-  //             ) {
-  //               opponentHasValidMoves = true;
-  //             }
-  //           }
-  //         }
-  //       }
+    const hasValidMove = (piecesArray) => {
+      for (const piece of piecesArray) {
+        for (let row = 0; row < rows; row++) {
+          for (let col = 0; col < cols; col++) {
+            if (isValidMove(piece.row, piece.col, row, col)) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    };
 
-  //       if (opponentPieces > 0 && opponentHasValidMoves) {
-  //         return false;
-  //       }
-  //     }
-  //   }
+    if (
+      (redPieces.length === 0 || !hasValidMove(redPieces)) &&
+      playerRedScore > playerBlueScore
+    ) {
+      setGameOver(true);
+      return "Red";
+    } else if (
+      (bluePieces.length === 0 || !hasValidMove(bluePieces)) &&
+      playerBlueScore > playerRedScore
+    ) {
+      setGameOver(true);
+      return "Blue";
+    } else if (redPieces.length === 0 || !hasValidMove(redPieces)) {
+      setGameOver(true);
+      return "Blue";
+    } else if (bluePieces.length === 0 || !hasValidMove(bluePieces)) {
+      setGameOver(true);
+      return "Red";
+    }
 
-  //   setGameOver(true);
-  //   setWinner(currentPlayerIsBlue ? "Blue" : "Red");
-  //   return true;
-  // };
+    return false;
+  };
 
   //Check piece 2 diagonal away if there is any valid capture
   const hasValidCapture = (row, col) => {
@@ -204,7 +258,7 @@ const Board = ({
   };
 
   const handleClick = (row, col, operator) => {
-    // if (gameOver) return;
+    if (gameOver) return;
 
     const clickedPiece = pieces[row][col];
     const anyValidCapture = hasAnyValidCapture();
@@ -215,7 +269,6 @@ const Board = ({
       clickedPiece.isBlue === currentPlayerIsBlue &&
       (!anyValidCapture || hasValidCapture(row, col))
     ) {
-      console.log(row, col);
       console.log(clickedPiece);
       return setSelectedPiece({ row, col });
     }
@@ -256,6 +309,16 @@ const Board = ({
         newPieces[row][col] = pieces[selectedPiece.row][selectedPiece.col];
         newPieces[selectedPiece.row][selectedPiece.col] = null;
         newPieces[midRow][midCol] = null;
+
+        //Promote piece to queen if it reaches the end of opposite side
+        if (
+          newPieces[row][col].isQueen === false &&
+          ((newPieces[row][col].isBlue && row === 0) ||
+            (!newPieces[row][col].isBlue && row === rows - 1))
+        ) {
+          newPieces[row][col].isQueen = true;
+        }
+
         setPieces(newPieces);
 
         //Check if there is another piece available to capture
@@ -373,6 +436,13 @@ const Board = ({
       minusBlueCountdown();
     }
 
+    const winner = checkGameOver();
+    if (winner === "Blue") {
+      setWinnerIsBlue(true);
+    } else {
+      setWinnerIsBlue(false);
+    }
+
     setCaptureValue({});
     setCapturedModalToggle(false);
   };
@@ -390,7 +460,7 @@ const Board = ({
         ? parseInt(captureValue.capturer) + parseInt(captureValue.captured)
         : "";
 
-    //If has decimal places fixed it to 1
+    //If has decimal places fixed it to 2
     if (correctAnswer - Math.floor(correctAnswer) !== 0) {
       correctAnswer = parseFloat(correctAnswer.toFixed(2));
     }
@@ -443,6 +513,13 @@ const Board = ({
 
     setCaptureValue({});
     setCapturedModalToggle(false);
+
+    const winner = checkGameOver();
+    if (winner === "Blue") {
+      setWinnerIsBlue(true);
+    } else {
+      setWinnerIsBlue(false);
+    }
   };
 
   useEffect(() => {
@@ -452,7 +529,6 @@ const Board = ({
   useEffect(() => {
     //Switch turn if no available piece to capture after capturing a piece
     if (!hasAnyValidCapture() && hasCapturedProgress) {
-      console.log("run");
       setHasCapturedProgress(false);
       setSelectedPiece(null);
       setCurrentPlayerIsBlue(!currentPlayerIsBlue);
@@ -502,6 +578,8 @@ const Board = ({
           />
         )}
 
+        {gameOver && <GameOverModal winnerIsBlue={winnerIsBlue} />}
+
         <div
           className="grid gap-[1px] w-full max-w-[500px] h-full max-h-[500px]"
           style={{
@@ -511,13 +589,6 @@ const Board = ({
         >
           {renderSquares()}
         </div>
-
-        {/* {gameOver && (
-          <div className="text-center mt-4">
-            <h2>Game Over!</h2>
-            <h3>{winner} player wins!</h3>
-          </div>
-        )} */}
       </div>
     </>
   );
