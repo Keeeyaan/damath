@@ -10,6 +10,7 @@ const ScoreBoard = ({
   blueTimeLeft,
   setBlueTimeLeft,
   currentTurn,
+  onTimerComplete,
 }) => {
   return (
     <div className="h-[450px] w-[500px] bg-[#e6bb99] shadow-md rounded p-6 ">
@@ -21,6 +22,7 @@ const ScoreBoard = ({
               timeLeft={blueTimeLeft}
               setTimeLeft={setBlueTimeLeft}
               runOnStart
+              onComplete={onTimerComplete}
             />
             <div className="bg-[#f0d9b5] p-4 rounded text-center">
               <h1 className=" font-bold text-blue-500 mb-2 text-xl ">
@@ -37,6 +39,7 @@ const ScoreBoard = ({
               timeLeft={redTimeLeft}
               setTimeLeft={setRedTimeLeft}
               runOnStart
+              onComplete={onTimerComplete}
             />
             <div className="bg-[#f0d9b5] p-4 rounded text-center">
               <h1 className=" font-bold text-red-500 mb-2 text-xl ">
