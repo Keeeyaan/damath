@@ -31,7 +31,7 @@ const Game = () => {
   };
 
   {
-    /* MIGHT CONSIDER THE DRAW FEATURE */
+    /* MIGHT CONSIDER THE DRAW LOGIC */
   }
   const playerTimerCompleteHandler = () => {
     if (playerBlueScore > playerRedScore) {
