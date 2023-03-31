@@ -10,7 +10,7 @@ const CaptureModal = ({
   currentPlayer,
   capturedProgress,
 }) => {
-  const [timeLeft, setTimeLeft] = useState(15);
+  const [timeLeft, setTimeLeft] = useState(30);
   const answerRef = useRef();
 
   const submitHandler = () => {
