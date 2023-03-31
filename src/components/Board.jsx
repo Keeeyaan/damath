@@ -639,7 +639,7 @@ const Board = ({
             } else if (rowIndex > 4) {
               return {
                 isBlue: true,
-                isQueen: true,
+                isQueen: false,
                 value: value[valueCounterBlue--],
               };
             }
