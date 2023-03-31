@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import Square from "./Square";
 import Piece from "./Piece";
@@ -27,12 +27,13 @@ const Board = ({
       .map(() => Array(cols).fill(null))
   );
 
+  const initialRender = useRef(true);
+
   //Board Logic
   const [selectedPiece, setSelectedPiece] = useState(null);
   /*This will set what color gonna be first*/
   const [currentPlayerIsBlue, setCurrentPlayerIsBlue] = useState(true);
   const [hasCapturedProgress, setHasCapturedProgress] = useState(false);
-  const [queenCaptured, setQueenCaptured] = useState(null);
 
   //Game Logic
   const [capturedModalToggle, setCapturedModalToggle] = useState(false);
@@ -45,7 +46,18 @@ const Board = ({
     return { row: midRow, col: midCol };
   };
 
-  const getQueenCapturePiece = (srcRow, srcCol, destRow, destCol) => {
+  const getQueenCapturedPiece = (srcRow, srcCol, destRow, destCol) => {
+    const srcPiece = pieces[srcRow][srcCol];
+    const destPiece = pieces[destRow][destCol];
+
+    const rowDiff = Math.abs(destRow - srcRow);
+    const colDiff = Math.abs(destCol - srcCol);
+
+    const steps = Math.max(rowDiff, colDiff);
+
+    if (!srcPiece.isQueen) return false;
+    if (destPiece) return false;
+
     let queenCaptured = {};
     let capturedPieceCount = 0;
     let lastCapturedPieceIsBlue = null;
@@ -74,7 +86,7 @@ const Board = ({
       }
     }
 
-    return capturedPieceCount;
+    return capturedPieceCount === 1 ? queenCaptured : false;
   };
 
   const isValidMove = (srcRow, srcCol, destRow, destCol) => {
@@ -87,59 +99,38 @@ const Board = ({
 
     if (destPiece) return false;
 
-    // if (srcPiece.isQueen) {
-    //   const steps = Math.max(rowDiff, colDiff);
-
-    //   let capturedPieceCount = 0;
-    //   let lastCapturedPieceIsBlue = null;
-
-    //   if (rowDiff !== colDiff) return false;
-
-    //   // Check if there are any pieces on the diagonal path and if they can be captured
-    //   for (let i = 1; i < steps; i++) {
-    //     const row = srcRow + ((destRow - srcRow) / steps) * i;
-    //     const col = srcCol + ((destCol - srcCol) / steps) * i;
-    //     const piece = pieces[row][col];
-
-    //     if (piece) {
-    //       if (piece.isBlue === srcPiece.isBlue) {
-    //         return false; // Cannot move over or capture own piece
-    //       } else {
-    //         capturedPieceCount++;
-    //         setQueenCaptured({ row, col });
-
-    //         if (
-    //           lastCapturedPieceIsBlue !== null &&
-    //           lastCapturedPieceIsBlue === piece.isBlue
-    //         ) {
-    //           return false; // Cannot capture two pieces of the same color in a row
-    //         }
-    //         lastCapturedPieceIsBlue = piece.isBlue;
-    //       }
-    //     }
-    //   }
-
-    //   return capturedPieceCount <= 1; // The queen can capture a maximum of one piece in a single move
-    // }
-
-    //Temporary Queen Piece Move Can move backward
     if (srcPiece.isQueen) {
-      if (rowDiff === 1 && colDiff === 1) {
-        return true;
-      }
+      const steps = Math.max(rowDiff, colDiff);
 
-      if (rowDiff === 2 && colDiff === 2) {
-        const { row: midRow, col: midCol } = getCapturedPiece(
-          srcRow,
-          srcCol,
-          destRow,
-          destCol
-        );
-        const capturedPiece = pieces[midRow][midCol];
-        return capturedPiece && capturedPiece.isBlue !== srcPiece.isBlue;
-      }
+      let capturedPieceCount = 0;
+      let lastCapturedPieceIsBlue = null;
 
-      return false;
+      if (rowDiff !== colDiff) return false;
+
+      // Check if there are any pieces on the diagonal path and if they can be captured
+      for (let i = 1; i < steps; i++) {
+        const row = srcRow + ((destRow - srcRow) / steps) * i;
+        const col = srcCol + ((destCol - srcCol) / steps) * i;
+        const piece = pieces[row][col];
+
+        if (piece) {
+          if (piece.isBlue === srcPiece.isBlue) {
+            return false; // Cannot move over or capture own piece
+          } else {
+            capturedPieceCount++;
+
+            if (
+              lastCapturedPieceIsBlue !== null &&
+              lastCapturedPieceIsBlue === piece.isBlue
+            ) {
+              return false; // Cannot capture two pieces of the same color in a row
+            }
+            lastCapturedPieceIsBlue = piece.isBlue;
+          }
+        }
+      }
+      console.log(capturedPieceCount);
+      return capturedPieceCount <= 1; // The queen can capture a maximum of one piece in a single move
     }
 
     if (
@@ -221,8 +212,33 @@ const Board = ({
     return false;
   };
 
+  const hasValidQueenCapture = (row, col) => {
+    const rowSteps = [-1, 1, 1, -1];
+    const colSteps = [1, 1, -1, -1];
+
+    for (let dir = 0; dir < 4; dir++) {
+      for (
+        let newRow = row + rowSteps[dir], newCol = col + colSteps[dir];
+        newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols;
+        newRow += rowSteps[dir], newCol += colSteps[dir]
+      ) {
+        if (getQueenCapturedPiece(row, col, newRow, newCol)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  };
+
   //Check piece 2 diagonal away if there is any valid capture
   const hasValidCapture = (row, col) => {
+    const piece = pieces[row][col];
+
+    if (piece.isQueen) {
+      return hasValidQueenCapture(row, col);
+    }
+
     for (let newRow = row - 2; newRow <= row + 4; newRow += 4) {
       for (let newCol = col - 2; newCol <= col + 4; newCol += 4) {
         if (
@@ -269,6 +285,7 @@ const Board = ({
       clickedPiece.isBlue === currentPlayerIsBlue &&
       (!anyValidCapture || hasValidCapture(row, col))
     ) {
+      console.log(row, col);
       console.log(clickedPiece);
       return setSelectedPiece({ row, col });
     }
@@ -279,7 +296,8 @@ const Board = ({
       isValidMove(selectedPiece.row, selectedPiece.col, row, col) &&
       (!anyValidCapture ||
         (Math.abs(row - selectedPiece.row) === 2 &&
-          Math.abs(col - selectedPiece.col) === 2))
+          Math.abs(col - selectedPiece.col) === 2) ||
+        pieces[selectedPiece.row][selectedPiece.col].isQueen)
     ) {
       const srcPiece = pieces[selectedPiece.row][selectedPiece.col];
 
@@ -291,7 +309,49 @@ const Board = ({
       const rowDiff = Math.abs(row - selectedPiece.row);
       const colDiff = Math.abs(col - selectedPiece.col);
 
-      if (rowDiff === 2 && colDiff === 2) {
+      if (srcPiece.isQueen) {
+        const result = getQueenCapturedPiece(
+          selectedPiece.row,
+          selectedPiece.col,
+          row,
+          col
+        );
+
+        //Capture logic
+        if (typeof result === "object") {
+          setCaptureValue({
+            captured: newPieces[result.row][result.col].value,
+            capturer: srcPiece.value,
+            operator: operator,
+          });
+          setCapturedModalToggle(true);
+
+          newPieces[row][col] = pieces[selectedPiece.row][selectedPiece.col];
+          newPieces[result.row][result.col] = null;
+          newPieces[selectedPiece.row][selectedPiece.col] = null;
+          setPieces(newPieces);
+
+          //logic for checking queen has available to capture after capture
+          if (hasValidQueenCapture(selectedPiece.row, selectedPiece.col)) {
+            setHasCapturedProgress(true);
+            return setSelectedPiece({ row, col });
+          }
+
+          setHasCapturedProgress(false);
+          setCurrentPlayerIsBlue(!currentPlayerIsBlue);
+          return setSelectedPiece(null);
+        }
+
+        //Update the board state with the new piece positions
+        newPieces[row][col] = pieces[selectedPiece.row][selectedPiece.col];
+        newPieces[selectedPiece.row][selectedPiece.col] = null;
+        setPieces(newPieces);
+
+        setCurrentPlayerIsBlue(!currentPlayerIsBlue);
+        return setSelectedPiece(null);
+      }
+
+      if (rowDiff === 2 && colDiff === 2 && !srcPiece.isQueen) {
         const { row: midRow, col: midCol } = getCapturedPiece(
           selectedPiece.row,
           selectedPiece.col,
@@ -334,7 +394,6 @@ const Board = ({
 
       //Update the board state with the new piece positions
       newPieces[row][col] = pieces[selectedPiece.row][selectedPiece.col];
-
       newPieces[selectedPiece.row][selectedPiece.col] = null;
 
       //Promote piece to queen if it reaches the end of opposite side
@@ -466,12 +525,21 @@ const Board = ({
     }
 
     console.log(playerAnswer, correctAnswer);
+    console.log(selectedPiece);
+    let result = true;
+    if (selectedPiece) {
+      result = hasValidQueenCapture(selectedPiece.row, selectedPiece.col);
+    }
 
     if (
       !currentPlayerIsBlue &&
       playerAnswer === correctAnswer &&
       hasCapturedProgress
     ) {
+      if (!result && pieces[selectedPiece.row][selectedPiece.col].isQueen) {
+        setCurrentPlayerIsBlue(!currentPlayerIsBlue);
+        setSelectedPiece(null);
+      }
       onAddPlayerRedScore();
       setCaptureValue({});
       return setCapturedModalToggle(false);
@@ -480,6 +548,11 @@ const Board = ({
       playerAnswer === correctAnswer &&
       hasCapturedProgress
     ) {
+      console.log(result);
+      if (!result && pieces[selectedPiece.row][selectedPiece.col].isQueen) {
+        setCurrentPlayerIsBlue(!currentPlayerIsBlue);
+        setSelectedPiece(null);
+      }
       onAddPlayerBlueScore();
       setCaptureValue({});
       return setCapturedModalToggle(false);
@@ -488,6 +561,11 @@ const Board = ({
       playerAnswer !== correctAnswer &&
       hasCapturedProgress
     ) {
+      console.log(result);
+      if (!result && pieces[selectedPiece.row][selectedPiece.col].isQueen) {
+        setCurrentPlayerIsBlue(!currentPlayerIsBlue);
+        setSelectedPiece(null);
+      }
       minusRedCountdown();
       setCaptureValue({});
       return setCapturedModalToggle(false);
@@ -496,6 +574,11 @@ const Board = ({
       playerAnswer !== correctAnswer &&
       hasCapturedProgress
     ) {
+      console.log(result);
+      if (!result && pieces[selectedPiece.row][selectedPiece.col].isQueen) {
+        setCurrentPlayerIsBlue(!currentPlayerIsBlue);
+        setSelectedPiece(null);
+      }
       minusBlueCountdown();
       setCaptureValue({});
       return setCapturedModalToggle(false);
@@ -527,11 +610,15 @@ const Board = ({
   }, [currentPlayerIsBlue]);
 
   useEffect(() => {
-    //Switch turn if no available piece to capture after capturing a piece
-    if (!hasAnyValidCapture() && hasCapturedProgress) {
-      setHasCapturedProgress(false);
-      setSelectedPiece(null);
-      setCurrentPlayerIsBlue(!currentPlayerIsBlue);
+    if (initialRender.current) {
+      initialRender.current = false;
+    } else {
+      //Switch turn if no available piece to capture after capturing a piece
+      if (!hasAnyValidCapture() && hasCapturedProgress) {
+        setHasCapturedProgress(false);
+        setSelectedPiece(null);
+        setCurrentPlayerIsBlue(!currentPlayerIsBlue);
+      }
     }
   }, [pieces]);
 
@@ -552,7 +639,7 @@ const Board = ({
             } else if (rowIndex > 4) {
               return {
                 isBlue: true,
-                isQueen: false,
+                isQueen: true,
                 value: value[valueCounterBlue--],
               };
             }
