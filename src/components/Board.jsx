@@ -519,9 +519,9 @@ const Board = ({
         ? parseInt(captureValue.capturer) + parseInt(captureValue.captured)
         : "";
 
-    //If has decimal places fixed it to 2
+    //If has decimal places fixed it to 1
     if (correctAnswer - Math.floor(correctAnswer) !== 0) {
-      correctAnswer = parseFloat(correctAnswer.toFixed(2));
+      correctAnswer = parseFloat(correctAnswer.toFixed(1));
     }
 
     console.log(playerAnswer, correctAnswer);
