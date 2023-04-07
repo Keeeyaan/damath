@@ -21,10 +21,13 @@ const ModalOverlay = ({ className, children }) => {
   );
 };
 
-const Modal = ({ className, children }) => {
+const Modal = ({ className, children, toggleModal }) => {
   return (
     <>
-      {ReactDOM.createPortal(<Backdrop />, document.getElementById("overlay"))}
+      {ReactDOM.createPortal(
+        <Backdrop onClick={toggleModal} />,
+        document.getElementById("overlay")
+      )}
       {ReactDOM.createPortal(
         <ModalOverlay className={className}>{children}</ModalOverlay>,
         document.getElementById("overlay")
