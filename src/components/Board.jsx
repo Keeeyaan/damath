@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 import Square from "./Square";
 import Piece from "./Piece";
@@ -15,8 +15,8 @@ const Board = ({
   minusRedCountdown,
   minusBlueCountdown,
   setCurrentTurn,
-  winnerIsBlue,
-  setWinnerIsBlue,
+  winner,
+  setWinner,
   gameOver,
   setGameOver,
 }) => {
@@ -26,8 +26,6 @@ const Board = ({
       .fill(null)
       .map(() => Array(cols).fill(null))
   );
-
-  const initialRender = useRef(true);
 
   //Board Logic
   const [selectedPiece, setSelectedPiece] = useState(null);
@@ -194,19 +192,19 @@ const Board = ({
       playerRedScore > playerBlueScore
     ) {
       setGameOver(true);
-      return "Red";
+      return setWinner("Red");
     } else if (
       (bluePieces.length === 0 || !hasValidMove(bluePieces)) &&
       playerBlueScore > playerRedScore
     ) {
       setGameOver(true);
-      return "Blue";
+      return setWinner("Blue");
     } else if (redPieces.length === 0 || !hasValidMove(redPieces)) {
       setGameOver(true);
-      return "Blue";
+      return setWinner("Blue");
     } else if (bluePieces.length === 0 || !hasValidMove(bluePieces)) {
       setGameOver(true);
-      return "Red";
+      return setWinner("Red");
     }
 
     return false;
@@ -519,9 +517,11 @@ const Board = ({
       minusRedCountdown();
     }
 
-    //!!BUG: The turn will not change after a piece captured if the other piece has valid capture so we need to keep track of the piece that has captured progress
-
-    if (!hasAnyValidCapture() && hasCapturedProgress) {
+    //Check if piece that is in captured progress has any valid capture
+    if (
+      !hasValidCapture(selectedPiece.row, selectedPiece.col) &&
+      hasCapturedProgress
+    ) {
       setHasCapturedProgress(false);
       setSelectedPiece(null);
       setCurrentPlayerIsBlue(!currentPlayerIsBlue);
@@ -530,13 +530,7 @@ const Board = ({
     setCaptureValue({});
     setCapturedModalToggle(false);
 
-    const winner = checkGameOver();
-
-    if (winner === "Blue") {
-      setWinnerIsBlue(true);
-    } else {
-      setWinnerIsBlue(false);
-    }
+    checkGameOver();
   };
 
   useEffect(() => {
@@ -560,7 +554,7 @@ const Board = ({
             } else if (rowIndex > 4) {
               return {
                 isBlue: true,
-                isQueen: false,
+                isQueen: true,
                 value: value[valueCounterBlue--],
               };
             }
@@ -585,7 +579,7 @@ const Board = ({
           />
         )}
 
-        {gameOver && <GameOverModal winnerIsBlue={winnerIsBlue} />}
+        {gameOver && <GameOverModal winner={winner} />}
 
         <div
           className="grid gap-[1px] w-full max-w-[500px] h-full max-h-[500px]"
