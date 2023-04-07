@@ -488,24 +488,6 @@ const Board = ({
     return squares;
   };
 
-  const timerCompleteHandler = () => {
-    if (currentPlayerIsBlue) {
-      minusRedCountdown();
-    } else {
-      minusBlueCountdown();
-    }
-
-    const winner = checkGameOver();
-    if (winner === "Blue") {
-      setWinnerIsBlue(true);
-    } else {
-      setWinnerIsBlue(false);
-    }
-
-    setCaptureValue({});
-    setCapturedModalToggle(false);
-  };
-
   const answerSubmitHandler = (answer) => {
     const playerAnswer = parseFloat(answer.current.value);
     let correctAnswer =
@@ -521,83 +503,35 @@ const Board = ({
 
     //If has decimal places fixed it to 1
     if (correctAnswer - Math.floor(correctAnswer) !== 0) {
-      correctAnswer = parseFloat(correctAnswer.toFixed(1));
+      correctAnswer = parseFloat(correctAnswer.toFixed(2));
     }
 
     console.log(playerAnswer, correctAnswer);
     console.log(selectedPiece);
-    let result = true;
-    if (selectedPiece) {
-      result = hasValidQueenCapture(selectedPiece.row, selectedPiece.col);
-    }
 
-    if (
-      !currentPlayerIsBlue &&
-      playerAnswer === correctAnswer &&
-      hasCapturedProgress
-    ) {
-      if (!result && pieces[selectedPiece.row][selectedPiece.col].isQueen) {
-        setCurrentPlayerIsBlue(!currentPlayerIsBlue);
-        setSelectedPiece(null);
-      }
-      onAddPlayerRedScore();
-      setCaptureValue({});
-      return setCapturedModalToggle(false);
-    } else if (
-      currentPlayerIsBlue &&
-      playerAnswer === correctAnswer &&
-      hasCapturedProgress
-    ) {
-      console.log(result);
-      if (!result && pieces[selectedPiece.row][selectedPiece.col].isQueen) {
-        setCurrentPlayerIsBlue(!currentPlayerIsBlue);
-        setSelectedPiece(null);
-      }
+    if (currentPlayerIsBlue && playerAnswer === correctAnswer) {
       onAddPlayerBlueScore();
-      setCaptureValue({});
-      return setCapturedModalToggle(false);
-    } else if (
-      !currentPlayerIsBlue &&
-      playerAnswer !== correctAnswer &&
-      hasCapturedProgress
-    ) {
-      console.log(result);
-      if (!result && pieces[selectedPiece.row][selectedPiece.col].isQueen) {
-        setCurrentPlayerIsBlue(!currentPlayerIsBlue);
-        setSelectedPiece(null);
-      }
-      minusRedCountdown();
-      setCaptureValue({});
-      return setCapturedModalToggle(false);
-    } else if (
-      currentPlayerIsBlue &&
-      playerAnswer !== correctAnswer &&
-      hasCapturedProgress
-    ) {
-      console.log(result);
-      if (!result && pieces[selectedPiece.row][selectedPiece.col].isQueen) {
-        setCurrentPlayerIsBlue(!currentPlayerIsBlue);
-        setSelectedPiece(null);
-      }
-      minusBlueCountdown();
-      setCaptureValue({});
-      return setCapturedModalToggle(false);
-    }
-
-    if (!currentPlayerIsBlue && playerAnswer === correctAnswer) {
-      onAddPlayerBlueScore();
-    } else if (currentPlayerIsBlue && playerAnswer === correctAnswer) {
+    } else if (!currentPlayerIsBlue && playerAnswer === correctAnswer) {
       onAddPlayerRedScore();
-    } else if (!currentPlayerIsBlue && playerAnswer !== correctAnswer) {
-      minusBlueCountdown();
     } else if (currentPlayerIsBlue && playerAnswer !== correctAnswer) {
+      minusBlueCountdown();
+    } else if (!currentPlayerIsBlue && playerAnswer !== correctAnswer) {
       minusRedCountdown();
+    }
+
+    //!!BUG: The turn will not change after a piece captured if the other piece has valid capture so we need to keep track of the piece that has captured progress
+
+    if (!hasAnyValidCapture() && hasCapturedProgress) {
+      setHasCapturedProgress(false);
+      setSelectedPiece(null);
+      setCurrentPlayerIsBlue(!currentPlayerIsBlue);
     }
 
     setCaptureValue({});
     setCapturedModalToggle(false);
 
     const winner = checkGameOver();
+
     if (winner === "Blue") {
       setWinnerIsBlue(true);
     } else {
@@ -608,19 +542,6 @@ const Board = ({
   useEffect(() => {
     setCurrentTurn(currentPlayerIsBlue);
   }, [currentPlayerIsBlue]);
-
-  useEffect(() => {
-    if (initialRender.current) {
-      initialRender.current = false;
-    } else {
-      //Switch turn if no available piece to capture after capturing a piece
-      if (!hasAnyValidCapture() && hasCapturedProgress) {
-        setHasCapturedProgress(false);
-        setSelectedPiece(null);
-        setCurrentPlayerIsBlue(!currentPlayerIsBlue);
-      }
-    }
-  }, [pieces]);
 
   useEffect(() => {
     const initialPieces = () => {
@@ -660,7 +581,6 @@ const Board = ({
             capturedProgress={hasCapturedProgress}
             currentPlayer={currentPlayerIsBlue}
             onSubmit={answerSubmitHandler}
-            onComplete={timerCompleteHandler}
             captureValue={captureValue}
           />
         )}

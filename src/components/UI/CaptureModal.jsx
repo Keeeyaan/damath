@@ -5,7 +5,6 @@ import Timer from "../Timer";
 
 const CaptureModal = ({
   onSubmit,
-  onComplete,
   captureValue,
   currentPlayer,
   capturedProgress,
@@ -46,7 +45,7 @@ const CaptureModal = ({
           timeLeft={timeLeft}
           setTimeLeft={setTimeLeft}
           runOnStart
-          onComplete={onComplete}
+          onComplete={submitHandler}
         />
         <hr />
         <div className="mt-4">
