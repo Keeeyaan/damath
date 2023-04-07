@@ -4,7 +4,7 @@ const HowToModal = ({ isOpen, toggleModal }) => {
   return (
     <>
       {isOpen && (
-        <Modal modalToggle={toggleModal}>
+        <Modal toggleModal={toggleModal}>
           <div className="bg-white rounded shadow-lg overflow-y-auto">
             <div className=" px-6 py-4">
               <h2 className="text-2xl font-bold mb-4">Game Mechanics:</h2>
@@ -29,14 +29,14 @@ const HowToModal = ({ isOpen, toggleModal }) => {
                 <br />- Scoring system: highest points to win until either;
                 mahurot ang playtime or no pieces left on the board
               </p>
-              {/* Add an "X" button to close the modal */}
+
               <button
                 className="absolute top-0 right-0 mt-4 mr-4 text-2xl font-bold cursor-pointer"
                 onClick={toggleModal}
               >
                 &times;
               </button>
-              {/* Add a "Close" button to close the modal */}
+
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition ease-in-out"
                 onClick={toggleModal}
