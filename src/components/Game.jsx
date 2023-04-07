@@ -13,7 +13,7 @@ const Game = () => {
   const [redTimeLeft, setRedTimeLeft] = useState(600);
   const [blueTimeLeft, setBlueTimeLeft] = useState(600);
   const [currentTurn, setCurrentTurn] = useState(true);
-  const [winnerIsBlue, setWinnerIsBlue] = useState(false);
+  const [winner, setWinner] = useState(null);
   const [gameOver, setGameOver] = useState(false);
 
   const minusRedCountdown = () => {
@@ -24,23 +24,21 @@ const Game = () => {
   };
 
   const addPlayerBlueScoreHandler = () => {
-    setPlayerBlueScore(playerBlueScore + 1);
+    setPlayerBlueScore((playerBlueScore) => playerBlueScore + 1);
   };
   const addPlayerRedScoreHandler = () => {
-    setPlayerRedScore(playerRedScore + 1);
+    setPlayerRedScore((playerRedScore) => playerRedScore + 1);
   };
 
-  {
-    /* MIGHT CONSIDER THE DRAW LOGIC */
-  }
   const playerTimerCompleteHandler = () => {
-    if (playerBlueScore > playerRedScore) {
-      setGameOver(true);
-      setWinnerIsBlue(true);
+    if (playerBlueScore < playerRedScore) {
+      setWinner("Red");
+    } else if (playerBlueScore > playerRedScore) {
+      setWinner("Blue");
     } else {
-      setGameOver(true);
-      setWinnerIsBlue(false);
+      setWinner("Draw");
     }
+    setGameOver(true);
   };
 
   return (
@@ -67,8 +65,8 @@ const Game = () => {
             playerBlueScore={playerBlueScore}
             playerRedScore={playerRedScore}
             setCurrentTurn={setCurrentTurn}
-            winnerIsBlue={winnerIsBlue}
-            setWinnerIsBlue={setWinnerIsBlue}
+            winner={winner}
+            setWinner={setWinner}
             gameOver={gameOver}
             setGameOver={setGameOver}
           />
