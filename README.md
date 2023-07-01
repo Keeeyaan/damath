@@ -37,3 +37,11 @@ To use the Damath game, follow these steps:
 
 :man_student: -Tester **Makilan Rolison** 
  - GitHub: [@Kishiiro](https://github.com/Kishiiro)
+
+#
+![Homepage](https://github.com/Keeeyaan/damath/assets/62949724/63a9d04c-e224-4c71-96eb-b89e39028100)
+
+![game mechanics](https://github.com/Keeeyaan/damath/assets/62949724/046b73b7-418d-49fa-96b1-ebe3c1f1937e)
+
+![gameplay](https://github.com/Keeeyaan/damath/assets/62949724/e786764e-f921-4069-a6ff-3ae74e375fcd)
+
