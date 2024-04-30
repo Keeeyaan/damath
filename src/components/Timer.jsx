@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-const Timer = ({className, timeLeft, setTimeLeft, runOnStart, onComplete }) => {
-  const [isRunning, setIsRunning] = useState(runOnStart);
-
+const Timer = ({
+  className,
+  timeLeft,
+  setTimeLeft,
+  runOnStart,
+  onComplete,
+}) => {
   // const restartTimer = () => {
   //   setTimeLeft(10 * 60);
   //   setIsRunning(true);
@@ -15,7 +19,7 @@ const Timer = ({className, timeLeft, setTimeLeft, runOnStart, onComplete }) => {
   };
 
   useEffect(() => {
-    if (isRunning && timeLeft > 0) {
+    if (runOnStart && timeLeft > 0) {
       const timer = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
       }, 1000);
@@ -24,14 +28,11 @@ const Timer = ({className, timeLeft, setTimeLeft, runOnStart, onComplete }) => {
       setIsRunning(false);
       onComplete();
     }
-  }, [timeLeft, isRunning]);
+  }, [timeLeft, runOnStart]);
 
   return (
     <div className="">
-      <h2 className={...className}>
-        {formatTime(timeLeft)}
-      </h2>
-      {/* {!isRunning && <button onClick={restartTimer}>Restart Timer</button>} */}
+      <h2 className={className}>{formatTime(timeLeft)}</h2>
     </div>
   );
 };
