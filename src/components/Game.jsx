@@ -15,6 +15,7 @@ const Game = () => {
   const [currentTurn, setCurrentTurn] = useState(true);
   const [winner, setWinner] = useState(null);
   const [gameOver, setGameOver] = useState(false);
+  const [gameIsStart, setGameIsStart] = useState(false);
 
   const minusRedCountdown = () => {
     setRedTimeLeft((prevTimeLeft) => Math.max(prevTimeLeft - 30, 0));
@@ -65,6 +66,7 @@ const Game = () => {
             playerBlueScore={playerBlueScore}
             playerRedScore={playerRedScore}
             setCurrentTurn={setCurrentTurn}
+            setGameIsStart={setGameIsStart}
             winner={winner}
             setWinner={setWinner}
             gameOver={gameOver}
@@ -80,6 +82,7 @@ const Game = () => {
           playerBlueScore={playerBlueScore}
           playerRedScore={playerRedScore}
           onTimerComplete={playerTimerCompleteHandler}
+          gameIsStart={gameIsStart}
         />
       </div>
     </div>

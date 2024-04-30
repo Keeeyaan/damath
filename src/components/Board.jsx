@@ -15,6 +15,7 @@ const Board = ({
   minusRedCountdown,
   minusBlueCountdown,
   setCurrentTurn,
+  setGameIsStart,
   winner,
   setWinner,
   gameOver,
@@ -301,6 +302,7 @@ const Board = ({
 
       if (srcPiece.isBlue !== currentPlayerIsBlue) return;
 
+      setGameIsStart(true);
       //Create a shallow copy of the pieces to ensure immutability
       const newPieces = pieces.map((row) => [...row]);
 
