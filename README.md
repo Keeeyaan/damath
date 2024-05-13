@@ -1,4 +1,11 @@
-# Damath
+<div align='center'>
+  
+![dammath-min](https://github.com/Keeeyaan/damath/assets/62949724/20f720a9-d208-4513-8507-437c7b1578c2)
+
+</div>
+
+# DaMath
+
 Damath is a two-player educational board game combining the board game "Dama" 
 (Filipino checkers) and math. It is a teaching tool for elementary and high school mathematics. 
 Every piece has a corresponding number, and each even (white) square on the board has a mathematical symbol.
@@ -20,8 +27,8 @@ The rules for Damath with some unique features:
 
 ## Usage
 To use the Damath game, follow these steps:
-- Install the required dependencies using npm install.
-- Start the development server using npm run dev.
+- Install the required dependencies using **npm install**.
+- Start the development server using **npm run dev**.
 - Open your browser and navigate to http://localhost:5173/ to start playing the game. 
 
 
