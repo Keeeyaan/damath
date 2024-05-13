@@ -31,11 +31,18 @@ To use the Damath game, follow these steps:
 
 
 ## Authors
-:man_student: -Developer **Kean Jieden Villaflor** 
- - GitHub: [@Keeeyaan](https://github.com/Keeeyaan)
- - LinkedIn: [@Kean Jieden Villaflor](https://www.linkedin.com/in/kean-jieden-villaflor-3a5970232/)
+<p align="left">
+    <kbd><img width="64" height="64"  src="https://avatars.githubusercontent.com/u/62949724?v=4"></kbd>&nbsp;&nbsp;&nbsp;&nbsp; :man_student: - Developer <b>Kean Jieden Villaflor</b>&nbsp;&nbsp;
+</p>
 
-:man_student: -Tester **Makilan Rolison** 
+- Portfolio: [@Kean](https://keanvillaflor.com)
+- GitHub: [@Keeeyaan](https://github.com/Keeeyaan)
+- LinkedIn: [@Kean Jieden Villaflor](https://www.linkedin.com/in/kean-jieden-villaflor/)
+
+<p align="left">
+    <kbd><img width="64" height="64"  src="https://avatars.githubusercontent.com/u/110706416?v=4"></kbd>&nbsp;&nbsp;&nbsp;&nbsp; :man_student: - Tester <b>Rolison Makilan</b>&nbsp;&nbsp;
+</p>
+
  - GitHub: [@Kishiiro](https://github.com/Kishiiro)
 
 ## Pages UI
